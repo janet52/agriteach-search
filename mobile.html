@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>חיפוש פעילויות - גרסת מובייל</title>
+    <title>חיפוש פעילויות Agriteach - גרסת מובייל</title>
     <style>
         body {
             font-family: system-ui, -apple-system, sans-serif;
@@ -18,10 +18,20 @@
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 15px;
+        }
         h1 {
             font-size: 24px;
-            margin: 0 0 20px 0;
+            margin: 0 0 8px 0;
             color: #1a1a1a;
+        }
+        .subtitle {
+            font-size: 14px;
+            color: #666;
         }
         input, select {
             width: 100%;
@@ -35,16 +45,17 @@
         .activity-types {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 8px;
+            margin: 16px 0;
         }
         .type-button {
-            padding: 12px;
+            padding: 12px 8px;
             border: none;
             border-radius: 8px;
             background: #f0f2f5;
-            font-size: 16px;
+            font-size: 14px;
             cursor: pointer;
+            transition: all 0.2s;
         }
         .type-button.selected {
             background: #4CAF50;
@@ -57,9 +68,9 @@
             color: white;
             border: none;
             border-radius: 8px;
-            font-size: 18px;
+            font-size: 16px;
             cursor: pointer;
-            margin-top: 10px;
+            margin-top: 16px;
         }
         .result-card {
             background: white;
@@ -72,44 +83,82 @@
             font-size: 18px;
             font-weight: bold;
             margin-bottom: 8px;
+            color: #1a1a1a;
         }
         .result-type {
             color: #666;
-            margin-bottom: 8px;
+            font-size: 14px;
+            margin: 8px 0;
+        }
+        .result-category {
+            color: #4CAF50;
+            font-weight: bold;
+            font-size: 14px;
+            margin: 8px 0;
         }
         .result-link {
             display: block;
             background: #4CAF50;
             color: white;
             text-decoration: none;
-            padding: 10px;
+            padding: 12px;
             border-radius: 6px;
             text-align: center;
+            margin-top: 12px;
+            font-size: 14px;
         }
         .loading {
             text-align: center;
             padding: 20px;
             color: #666;
-            font-size: 16px;
+        }
+        .filters {
+            background: #f8f9fa;
+            padding: 16px;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+        .switch-to-desktop {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+        .switch-to-desktop a {
+            color: #4CAF50;
+            text-decoration: none;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>חיפוש פעילויות Agriteach</h1>
-        
+        <div class="header">
+            <h1>חיפוש פעילויות Agriteach</h1>
+            <div class="subtitle">חיפוש מותאם למובייל</div>
+        </div>
+
         <div>
             <label>נושא לחיפוש:</label>
             <input type="text" id="topic" placeholder="למשל: רבייה בצמחים">
         </div>
 
+        <div class="filters">
+            <label>מדור:</label>
+            <select id="category">
+                <option value="all">כל המדורים</option>
+                <option value="core">ליבת מדעי החקלאות</option>
+                <option value="teaching">משאבי הוראה</option>
+                <option value="experiments">ניסויים ומעבדות</option>
+            </select>
+        </div>
+
         <div>
-            <label style="display: block; margin: 16px 0 8px 0;">בחר סוגי פעילויות:</label>
+            <label>סוגי פעילויות:</label>
             <div class="activity-types">
                 <button onclick="toggleType(this, 'מצגת')" class="type-button selected">מצגת</button>
                 <button onclick="toggleType(this, 'מערך שיעור')" class="type-button selected">מערך שיעור</button>
                 <button onclick="toggleType(this, 'דף עבודה')" class="type-button">דף עבודה</button>
-                <button onclick="toggleType(this, 'סרטון')" class="type-button">סרטון</button>
+                <button onclick="toggleType(this, 'הוראה')" class="type-button">הוראה</button>
             </div>
         </div>
 
@@ -120,10 +169,21 @@
         </div>
 
         <div id="results"></div>
+
+        <div class="switch-to-desktop">
+            <a href="desktop.html">מעבר לגרסת מחשב</a>
+        </div>
     </div>
 
     <script>
         let selectedTypes = ['מצגת', 'מערך שיעור'];
+        const baseUrl = 'https://agriteach.org.il';
+
+        const categoryPaths = {
+            'core': '/ליבת-מדעי-החקלאות',
+            'teaching': '/משאבי-הוראה',
+            'experiments': '/ניסויים-ומעבדות'
+        };
 
         function toggleType(button, type) {
             button.classList.toggle('selected');
@@ -136,6 +196,8 @@
 
         async function searchActivities() {
             const topic = document.getElementById('topic').value;
+            const category = document.getElementById('category').value;
+
             if (!topic) {
                 alert('נא להזין נושא לחיפוש');
                 return;
@@ -147,34 +209,50 @@
             loading.style.display = 'block';
             results.innerHTML = '';
 
-            // סימולציה של זמן חיפוש
-            await new Promise(r => setTimeout(r, 1000));
+            try {
+                // סימולציה של תוצאות חיפוש
+                const mockResults = [
+                    {
+                        title: `${topic} - מערך שיעור`,
+                        type: 'מערך שיעור',
+                        category: 'ליבת מדעי החקלאות',
+                        path: `/ליבת-מדעי-החקלאות/${topic.replace(/\s+/g, '-')}`,
+                        fileType: 'doc'
+                    },
+                    {
+                        title: `${topic} - מצגת מלווה`,
+                        type: 'מצגת',
+                        category: 'משאבי הוראה',
+                        path: `/משאבי-הוראה/${topic.replace(/\s+/g, '-')}-מצגת`,
+                        fileType: 'ppt'
+                    }
+                ];
 
-            const mockResults = selectedTypes.map(type => ({
-                title: `${topic} - ${type}`,
-                type: type,
-                link: `https://agriteach.org.il/${type.replace(/\s+/g, '-')}/${topic.replace(/\s+/g, '-')}`
-            }));
+                loading.style.display = 'none';
 
-            loading.style.display = 'none';
-            
-            if (mockResults.length === 0) {
-                results.innerHTML = '<div class="result-card">לא נמצאו תוצאות</div>';
-                return;
+                if (mockResults.length === 0) {
+                    results.innerHTML = '<div class="result-card">לא נמצאו תוצאות</div>';
+                    return;
+                }
+
+                results.innerHTML = mockResults
+                    .filter(result => selectedTypes.includes(result.type))
+                    .map(result => `
+                        <div class="result-card">
+                            <div class="result-title">${result.title}</div>
+                            <div class="result-type">סוג: ${result.type}</div>
+                            <div class="result-category">מדור: ${result.category}</div>
+                            <a href="${baseUrl}${result.path}" target="_blank" class="result-link">
+                                פתח פעילות (${result.fileType})
+                            </a>
+                        </div>
+                    `).join('');
+
+            } catch (error) {
+                loading.style.display = 'none';
+                results.innerHTML = '<div class="result-card">אירעה שגיאה בחיפוש. נסה שנית.</div>';
+                console.error('Search error:', error);
             }
-
-            results.innerHTML = `
-                <h2 style="margin: 20px 0;">נמצאו ${mockResults.length} פעילויות:</h2>
-                ${mockResults.map(result => `
-                    <div class="result-card">
-                        <div class="result-title">${result.title}</div>
-                        <div class="result-type">סוג: ${result.type}</div>
-                        <a href="${result.link}" target="_blank" class="result-link">
-                            פתח פעילות
-                        </a>
-                    </div>
-                `).join('')}
-            `;
         }
     </script>
 </body>
