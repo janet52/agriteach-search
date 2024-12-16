@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>חיפוש פעילויות Agriteach</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        h1 {
+            color: #1a1a1a;
+            margin-bottom: 20px;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            margin: 10px;
+            background: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        .button:hover {
+            background: #45a049;
+        }
+        .note {
+            margin-top: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>חיפוש פעילויות Agriteach</h1>
+        <div>
+            <a href="mobile.html" class="button">גרסת מובייל</a>
+            <a href="desktop.html" class="button">גרסת מחשב</a>
+        </div>
+        <p class="note">המערכת תנתב אותך אוטומטית לגרסה המתאימה למכשיר שלך.</p>
+    </div>
+
+    <script>
+        // זיהוי אם המשתמש במובייל
+        function isMobile() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        }
+
+        // הפניה אוטומטית לדף המתאים
+        window.onload = function() {
+            if (isMobile()) {
+                window.location.href = 'mobile.html';
+            } else {
+                window.location.href = 'desktop.html';
+            }
+        }
+    </script>
+</body>
+</html>
+Improve
