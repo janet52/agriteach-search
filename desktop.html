@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>חיפוש פעילויות Agriteach - גרסת מחשב</title>
+    <title>חיפוש פעילויות Agriteach - מערכת מתקדמת</title>
     <style>
         body {
             font-family: system-ui, -apple-system, sans-serif;
@@ -22,6 +22,8 @@
         .header {
             text-align: center;
             margin-bottom: 40px;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 20px;
         }
         h1 {
             font-size: 32px;
@@ -42,6 +44,15 @@
             padding: 20px;
             background: #f8f9fa;
             border-radius: 12px;
+        }
+        .category-select {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0 20px 0;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            background: white;
         }
         input, select {
             width: 100%;
@@ -69,10 +80,6 @@
         }
         .type-button.selected {
             background: #4CAF50;
-            color: white;
-        }
-        .type-button:hover {
-            background: #45a049;
             color: white;
         }
         .search-button {
@@ -114,8 +121,13 @@
         }
         .result-type {
             color: #666;
-            margin-bottom: 15px;
+            margin: 10px 0;
             font-size: 16px;
+        }
+        .result-category {
+            color: #4CAF50;
+            font-weight: bold;
+            margin: 5px 0;
         }
         .result-link {
             display: block;
@@ -125,6 +137,7 @@
             padding: 12px;
             border-radius: 6px;
             text-align: center;
+            margin-top: 15px;
             transition: background 0.2s;
         }
         .result-link:hover {
@@ -136,21 +149,20 @@
             color: #666;
             font-size: 18px;
         }
-        .bottom-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            padding: 15px;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-            text-align: center;
-            display: none;
+        .breadcrumbs {
+            margin-bottom: 20px;
+            color: #666;
         }
-        .switch-version {
+        .breadcrumbs a {
             color: #4CAF50;
             text-decoration: none;
-            margin-right: 20px;
+        }
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            margin-top: 20px;
         }
         @media (max-width: 768px) {
             .search-section {
@@ -166,7 +178,7 @@
     <div class="container">
         <div class="header">
             <h1>חיפוש פעילויות Agriteach</h1>
-            <div class="subtitle">מערכת חיפוש מתקדמת לפעילויות לימודיות</div>
+            <div class="subtitle">מערכת חיפוש מתקדמת לפעילויות לימודיות בחקלאות</div>
         </div>
 
         <div class="search-section">
@@ -176,16 +188,17 @@
             </div>
 
             <div class="filters">
-                <label>סינון לפי:</label>
-                <select id="sort" style="margin-bottom: 10px;">
-                    <option value="relevance">רלוונטיות</option>
-                    <option value="date">תאריך העלאה</option>
-                    <option value="name">שם</option>
+                <label>בחירת מדור:</label>
+                <select id="category" class="category-select">
+                    <option value="all">כל המדורים</option>
+                    <option value="core">ליבת מדעי החקלאות</option>
+                    <option value="teaching">משאבי הוראה</option>
+                    <option value="experiments">ניסויים ומעבדות</option>
                 </select>
                 
                 <label>כיתה:</label>
                 <select id="grade">
-                    <option value="all">הכל</option>
+                    <option value="all">כל הכיתות</option>
                     <option value="elementary">יסודי</option>
                     <option value="middle">חטיבת ביניים</option>
                     <option value="high">תיכון</option>
@@ -194,16 +207,14 @@
         </div>
 
         <div>
-            <label style="display: block; margin-bottom: 10px;">סוגי פעילויות:</label>
+            <label>סוגי פעילויות:</label>
             <div class="activity-types">
                 <button onclick="toggleType(this, 'מצגת')" class="type-button selected">מצגת</button>
                 <button onclick="toggleType(this, 'מערך שיעור')" class="type-button selected">מערך שיעור</button>
                 <button onclick="toggleType(this, 'דף עבודה')" class="type-button">דף עבודה</button>
-                <button onclick="toggleType(this, 'סרטון')" class="type-button">סרטון</button>
-                <button onclick="toggleType(this, 'משחק')" class="type-button">משחק</button>
-                <button onclick="toggleType(this, 'מבחן')" class="type-button">מבחן</button>
-                <button onclick="toggleType(this, 'פעילות')" class="type-button">פעילות</button>
-                <button onclick="toggleType(this, 'אחר')" class="type-button">אחר</button>
+                <button onclick="toggleType(this, 'הוראה')" class="type-button">הוראה</button>
+                <button onclick="toggleType(this, 'ניסוי')" class="type-button">ניסוי</button>
+                <button onclick="toggleType(this, 'מאמר')" class="type-button">מאמר</button>
             </div>
         </div>
 
@@ -216,12 +227,15 @@
         <div id="results" class="results-grid"></div>
     </div>
 
-    <div class="bottom-bar" id="bottomBar">
-        <a href="mobile.html" class="switch-version">מעבר לגרסת מובייל</a>
-    </div>
-
     <script>
         let selectedTypes = ['מצגת', 'מערך שיעור'];
+        const baseUrl = 'https://agriteach.org.il';
+
+        const categoryPaths = {
+            'core': '/ליבת-מדעי-החקלאות',
+            'teaching': '/משאבי-הוראה',
+            'experiments': '/ניסויים-ומעבדות'
+        };
 
         function toggleType(button, type) {
             button.classList.toggle('selected');
@@ -234,7 +248,7 @@
 
         async function searchActivities() {
             const topic = document.getElementById('topic').value;
-            const sort = document.getElementById('sort').value;
+            const category = document.getElementById('category').value;
             const grade = document.getElementById('grade').value;
 
             if (!topic) {
@@ -248,51 +262,62 @@
             loading.style.display = 'block';
             results.innerHTML = '';
 
-            // סימולציה של זמן חיפוש
-            await new Promise(r => setTimeout(r, 1000));
+            try {
+                // סימולציה של תוצאות חיפוש מהאתר
+                const mockResults = [
+                    {
+                        title: `${topic} - מערך שיעור`,
+                        type: 'מערך שיעור',
+                        category: 'ליבת מדעי החקלאות',
+                        description: 'מערך שיעור מקיף בנושא, כולל מצגת ודפי עבודה',
+                        path: `/ליבת-מדעי-החקלאות/${topic.replace(/\s+/g, '-')}`,
+                        fileType: 'doc'
+                    },
+                    {
+                        title: `${topic} - מצגת מלווה`,
+                        type: 'מצגת',
+                        category: 'משאבי הוראה',
+                        description: 'מצגת להוראת הנושא בכיתה',
+                        path: `/משאבי-הוראה/${topic.replace(/\s+/g, '-')}-מצגת`,
+                        fileType: 'ppt'
+                    },
+                    {
+                        title: `${topic} - דף עבודה`,
+                        type: 'דף עבודה',
+                        category: 'משאבי הוראה',
+                        description: 'דף עבודה לתרגול הנושא',
+                        path: `/משאבי-הוראה/${topic.replace(/\s+/g, '-')}-עבודה`,
+                        fileType: 'pdf'
+                    }
+                ];
 
-            // יצירת תוצאות לדוגמה
-            const mockResults = selectedTypes.map(type => ({
-                title: `${topic} - ${type}`,
-                type: type,
-                grade: grade === 'all' ? ['יסודי', 'חטיבה', 'תיכון'][Math.floor(Math.random() * 3)] : grade,
-                link: `https://agriteach.org.il/${type.replace(/\s+/g, '-')}/${topic.replace(/\s+/g, '-')}`
-            }));
+                loading.style.display = 'none';
 
-            if (sort === 'name') {
-                mockResults.sort((a, b) => a.title.localeCompare(b.title));
+                if (mockResults.length === 0) {
+                    results.innerHTML = '<div class="no-results">לא נמצאו תוצאות מתאימות לחיפוש</div>';
+                    return;
+                }
+
+                results.innerHTML = mockResults
+                    .filter(result => selectedTypes.includes(result.type))
+                    .map(result => `
+                        <div class="result-card">
+                            <div class="result-title">${result.title}</div>
+                            <div class="result-type">סוג: ${result.type}</div>
+                            <div class="result-category">מדור: ${result.category}</div>
+                            <div class="result-description">${result.description}</div>
+                            <a href="${baseUrl}${result.path}" target="_blank" class="result-link">
+                                פתח פעילות (${result.fileType})
+                            </a>
+                        </div>
+                    `).join('');
+
+            } catch (error) {
+                loading.style.display = 'none';
+                results.innerHTML = '<div class="no-results">אירעה שגיאה בחיפוש. נסה שנית מאוחר יותר.</div>';
+                console.error('Search error:', error);
             }
-
-            loading.style.display = 'none';
-            
-            if (mockResults.length === 0) {
-                results.innerHTML = '<div class="result-card">לא נמצאו תוצאות</div>';
-                return;
-            }
-
-            results.innerHTML = mockResults.map(result => `
-                <div class="result-card">
-                    <div class="result-title">${result.title}</div>
-                    <div class="result-type">
-                        סוג: ${result.type}<br>
-                        שכבת גיל: ${result.grade}
-                    </div>
-                    <a href="${result.link}" target="_blank" class="result-link">
-                        פתח פעילות
-                    </a>
-                </div>
-            `).join('');
         }
-
-        // הצגת סרגל תחתון בגלילה
-        window.onscroll = function() {
-            const bottomBar = document.getElementById('bottomBar');
-            if (window.scrollY > 200) {
-                bottomBar.style.display = 'block';
-            } else {
-                bottomBar.style.display = 'none';
-            }
-        };
     </script>
 </body>
 </html>
