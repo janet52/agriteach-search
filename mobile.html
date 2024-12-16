@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>חיפוש פעילויות - גרסת מובייל</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 16px;
+            background-color: #f0f2f5;
+        }
+        .container {
+            max-width: 100%;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            font-size: 24px;
+            margin: 0 0 20px 0;
+            color: #1a1a1a;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0 16px 0;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .activity-types {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .type-button {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #f0f2f5;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .type-button.selected {
+            background: #4CAF50;
+            color: white;
+        }
+        .search-button {
+            width: 100%;
+            padding: 14px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .result-card {
+            background: white;
+            padding: 16px;
+            margin: 16px 0;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        .result-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        .result-type {
+            color: #666;
+            margin-bottom: 8px;
+        }
+        .result-link {
+            display: block;
+            background: #4CAF50;
+            color: white;
+            text-decoration: none;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>חיפוש פעילויות Agriteach</h1>
+        
+        <div>
+            <label>נושא לחיפוש:</label>
+            <input type="text" id="topic" placeholder="למשל: רבייה בצמחים">
+        </div>
+
+        <div>
+            <label style="display: block; margin: 16px 0 8px 0;">בחר סוגי פעילויות:</label>
+            <div class="activity-types">
+                <button onclick="toggleType(this, 'מצגת')" class="type-button selected">מצגת</button>
+                <button onclick="toggleType(this, 'מערך שיעור')" class="type-button selected">מערך שיעור</button>
+                <button onclick="toggleType(this, 'דף עבודה')" class="type-button">דף עבודה</button>
+                <button onclick="toggleType(this, 'סרטון')" class="type-button">סרטון</button>
+            </div>
+        </div>
+
+        <button onclick="searchActivities()" class="search-button">חפש פעילויות</button>
+
+        <div id="loading" class="loading" style="display: none;">
+            מחפש פעילויות...
+        </div>
+
+        <div id="results"></div>
+    </div>
+
+    <script>
+        let selectedTypes = ['מצגת', 'מערך שיעור'];
+
+        function toggleType(button, type) {
+            button.classList.toggle('selected');
+            if (selectedTypes.includes(type)) {
+                selectedTypes = selectedTypes.filter(t => t !== type);
+            } else {
+                selectedTypes.push(type);
+            }
+        }
+
+        async function searchActivities() {
+            const topic = document.getElementById('topic').value;
+            if (!topic) {
+                alert('נא להזין נושא לחיפוש');
+                return;
+            }
+
+            const loading = document.getElementById('loading');
+            const results = document.getElementById('results');
+            
+            loading.style.display = 'block';
+            results.innerHTML = '';
+
+            // סימולציה של זמן חיפוש
+            await new Promise(r => setTimeout(r, 1000));
+
+            const mockResults = selectedTypes.map(type => ({
+                title: `${topic} - ${type}`,
+                type: type,
+                link: `https://agriteach.org.il/${type.replace(/\s+/g, '-')}/${topic.replace(/\s+/g, '-')}`
+            }));
+
+            loading.style.display = 'none';
+            
+            if (mockResults.length === 0) {
+                results.innerHTML = '<div class="result-card">לא נמצאו תוצאות</div>';
+                return;
+            }
+
+            results.innerHTML = `
+                <h2 style="margin: 20px 0;">נמצאו ${mockResults.length} פעילויות:</h2>
+                ${mockResults.map(result => `
+                    <div class="result-card">
+                        <div class="result-title">${result.title}</div>
+                        <div class="result-type">סוג: ${result.type}</div>
+                        <a href="${result.link}" target="_blank" class="result-link">
+                            פתח פעילות
+                        </a>
+                    </div>
+                `).join('')}
+            `;
+        }
+    </script>
+</body>
+</html>
