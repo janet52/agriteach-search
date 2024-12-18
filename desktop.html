@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>חיפוש פעילויות Agriteach</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 30px;
+            background-color: #f0f2f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 20px;
+        }
+        h1 {
+            font-size: 32px;
+            color: #1a1a1a;
+            margin: 0 0 10px 0;
+        }
+        .subtitle {
+            color: #666;
+            font-size: 18px;
+        }
+        .search-section {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        .filters {
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0 20px 0;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .activity-types {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .type-button {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .type-button.selected {
+            background: #4CAF50;
+            color: white;
+        }
+        .search-button {
+            width: 100%;
+            padding: 16px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .search-button:hover {
+            background: #45a049;
+        }
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .result-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #ddd;
+            transition: transform 0.2s;
+        }
+        .result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .result-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #1a1a1a;
+        }
+        .result-type {
+            color: #666;
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        .result-category {
+            color: #4CAF50;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        .result-link {
+            display: block;
+            background: #4CAF50;
+            color: white;
+            text-decoration: none;
+            padding: 12px;
+            border-radius: 6px;
+            text-align: center;
+            margin-top: 15px;
+            transition: background 0.2s;
+        }
+        .result-link:hover {
+            background: #45a049;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 18px;
+        }
+        @media (max-width: 768px) {
+            .search-section {
+                grid-template-columns: 1fr;
+            }
+            .activity-types {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>חיפוש פעילויות Agriteach</h1>
+            <div class="subtitle">מערכת חיפוש מתקדמת לפעילויות לימודיות בחקלאות</div>
+        </div>
+
+        <div class="search-section">
+            <div class="main-search">
+                <label>נושא לחיפוש:</label>
+                <input type="text" id="topic" placeholder="למשל: רבייה בצמחים">
+            </div>
+
+            <div class="filters">
+                <label>בחירת מדור:</label>
+                <select id="category">
+                    <option value="all">כל המדורים</option>
+                    <option value="core">ליבת מדעי החקלאות</option>
+                    <option value="teaching">משאבי הוראה</option>
+                </select>
+            </div>
+        </div>
+
+        <div>
+            <label>סוגי פעילויות:</label>
+            <div class="activity-types">
+                <button onclick="toggleType(this, 'מצגת')" class="type-button selected">מצגת</button>
+                <button onclick="toggleType(this, 'מערך שיעור')" class="type-button selected">מערך שיעור</button>
+                <button onclick="toggleType(this, 'דף עבודה')" class="type-button">דף עבודה</button>
+                <button onclick="toggleType(this, 'יחידת לימוד')" class="type-button">יחידת לימוד</button>
+            </div>
+        </div>
+
+        <button onclick="searchActivities()" class="search-button">חפש פעילויות</button>
+
+        <div id="loading" class="loading" style="display: none;">
+            מחפש פעילויות...
+        </div>
+
+        <div id="results" class="results-grid"></div>
+    </div>
+
+    <script>
+        let selectedTypes = ['מצגת', 'מערך שיעור'];
+        const baseUrl = 'https://agriteach.org.il';
+
+        function toggleType(button, type) {
+            button.classList.toggle('selected');
+            if (selectedTypes.includes(type)) {
+                selectedTypes = selectedTypes.filter(t => t !== type);
+            } else {
+                selectedTypes.push(type);
+            }
+        }
+
+        async function searchActivities() {
+            const topic = document.getElementById('topic').value;
+            const category = document.getElementById('category').value;
+
+            if (!topic) {
+                alert('נא להזין נושא לחיפוש');
+                return;
+            }
+
+            const loading = document.getElementById('loading');
+            const results = document.getElementById('results');
+            
+            loading.style.display = 'block';
+            results.innerHTML = '';
+
+            try {
+                const mockResults = [
+                    {
+                        title: `${topic} - יחידת לימוד`,
+                        type: 'יחידת לימוד',
+                        category: 'ליבת מדעי החקלאות',
+                        description: 'יחידת לימוד מלאה כולל מערכי שיעור ומצגות',
+                        path: `/משאבי-הוראה/ליבת-מדעי-החקלאות/יחידת-לימוד-${topic}`
+                    },
+                    {
+                        title: `${topic} - מצגת`,
+                        type: 'מצגת',
+                        category: 'משאבי הוראה',
+                        description: 'מצגת להוראת הנושא',
+                        path: `/משאבי-הוראה/ליבת-מדעי-החקלאות/${topic}`
+                    }
+                ];
+
+                loading.style.display = 'none';
+                
+                if (mockResults.length === 0) {
+                    results.innerHTML = '<div class="result-card">לא נמצאו תוצאות מתאימות לחיפוש</div>';
+                    return;
+                }
+
+                results.innerHTML = mockResults
+                    .filter(result => selectedTypes.includes(result.type))
+                    .map(result => `
+                        <div class="result-card">
+                            <div class="result-title">${result.title}</div>
+                            <div class="result-type">סוג: ${result.type}</div>
+                            <div class="result-category">מדור: ${result.category}</div>
+                            <div class="result-description">${result.description}</div>
+                            <a href="${baseUrl}${result.path}" target="_blank" class="result-link">
+                                צפה בחומרי הלימוד
+                            </a>
+                        </div>
+                    `).join('');
+
+            } catch (error) {
+                loading.style.display = 'none';
+                results.innerHTML = '<div class="no-results">אירעה שגיאה בחיפוש. נסה שנית מאוחר יותר.</div>';
+                console.error('Search error:', error);
+            }
+        }
+    </script>
+</body>
+</html>
