@@ -1,9 +1,9 @@
-    <!DOCTYPE html>
+ <!DOCTYPE html>
 <html dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>חיפוש פעילויות Agriteach - מערכת מתקדמת</title>
+    <title>חיפוש פעילויות Agriteach</title>
     <style>
         body {
             font-family: system-ui, -apple-system, sans-serif;
@@ -247,67 +247,64 @@
         }
 
         async function searchActivities() {
-          async function searchActivities() {
-    const topic = document.getElementById('topic').value;
-    const category = document.getElementById('category').value;
+            const topic = document.getElementById('topic').value;
+            const category = document.getElementById('category').value;
 
-    if (!topic) {
-        alert('נא להזין נושא לחיפוש');
-        return;
-    }
-
-    const loading = document.getElementById('loading');
-    const results = document.getElementById('results');
-    
-    loading.style.display = 'block';
-    results.innerHTML = '';
-
-    try {
-        // בניית תוצאות חיפוש עם קישורים נכונים
-        const mockResults = [
-            {
-                title: `${topic} - חומרי למידה`,
-                type: 'מערך שיעור',
-                category: 'ליבת מדעי החקלאות',
-                description: 'מאגר פעילויות ומערכי שיעור בנושא',
-                path: `/ליבת-מדעי-החקלאות/${topic.replace(/\s+/g, '-')}-מאגר-פעילויות`
-            },
-            {
-                title: `${topic} - משאבי הוראה`,
-                type: 'מצגת',
-                category: 'משאבי הוראה',
-                description: 'חומרי עזר להוראת הנושא',
-                path: `/משאבי-הוראה/${topic.replace(/\s+/g, '-')}`
+            if (!topic) {
+                alert('נא להזין נושא לחיפוש');
+                return;
             }
-        ];
 
-        loading.style.display = 'none';
-        
-        if (mockResults.length === 0) {
-            results.innerHTML = '<div class="result-card">לא נמצאו תוצאות מתאימות לחיפוש</div>';
-            return;
-        }
+            const loading = document.getElementById('loading');
+            const results = document.getElementById('results');
+            
+            loading.style.display = 'block';
+            results.innerHTML = '';
 
-        results.innerHTML = mockResults
-            .filter(result => selectedTypes.includes(result.type))
-            .map(result => `
-                <div class="result-card">
-                    <div class="result-title">${result.title}</div>
-                    <div class="result-type">סוג: ${result.type}</div>
-                    <div class="result-category">מדור: ${result.category}</div>
-                    <div class="result-description">${result.description}</div>
-                    <a href="${baseUrl}${result.path}" target="_blank" class="result-link">
-                        צפה בחומרי הלימוד
-                    </a>
-                </div>
-            `).join('');
+            try {
+                // בניית תוצאות חיפוש עם קישורים נכונים
+                const mockResults = [
+                    {
+                        title: `${topic} - חומרי למידה`,
+                        type: 'מערך שיעור',
+                        category: 'ליבת מדעי החקלאות',
+                        description: 'מאגר פעילויות ומערכי שיעור בנושא',
+                        path: `/ליבת-מדעי-החקלאות/${topic.replace(/\s+/g, '-')}-מאגר-פעילויות`
+                    },
+                    {
+                        title: `${topic} - משאבי הוראה`,
+                        type: 'מצגת',
+                        category: 'משאבי הוראה',
+                        description: 'חומרי עזר להוראת הנושא',
+                        path: `/משאבי-הוראה/${topic.replace(/\s+/g, '-')}`
+                    }
+                ];
 
-    } catch (error) {
-        loading.style.display = 'none';
-        results.innerHTML = '<div class="no-results">אירעה שגיאה בחיפוש. נסה שנית מאוחר יותר.</div>';
-        console.error('Search error:', error);
-    }
-}
+                loading.style.display = 'none';
+                
+                if (mockResults.length === 0) {
+                    results.innerHTML = '<div class="result-card">לא נמצאו תוצאות מתאימות לחיפוש</div>';
+                    return;
+                }
+
+                results.innerHTML = mockResults
+                    .filter(result => selectedTypes.includes(result.type))
+                    .map(result => `
+                        <div class="result-card">
+                            <div class="result-title">${result.title}</div>
+                            <div class="result-type">סוג: ${result.type}</div>
+                            <div class="result-category">מדור: ${result.category}</div>
+                            <div class="result-description">${result.description}</div>
+                            <a href="${baseUrl}${result.path}" target="_blank" class="result-link">
+                                צפה בחומרי הלימוד
+                            </a>
+                        </div>
+                    `).join('');
+
+            } catch (error) {
+                loading.style.display = 'none';
+                results.innerHTML = '<div class="no-results">אירעה שגיאה בחיפוש. נסה שנית מאוחר יותר.</div>';
+                console.error('Search error:', error);
             }
         }
     </script>
