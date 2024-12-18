@@ -1,4 +1,6 @@
- <!DOCTYPE html>
+p version with correct links
+
+<!DOCTYPE html>
 <html dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -149,21 +151,6 @@
             color: #666;
             font-size: 18px;
         }
-        .breadcrumbs {
-            margin-bottom: 20px;
-            color: #666;
-        }
-        .breadcrumbs a {
-            color: #4CAF50;
-            text-decoration: none;
-        }
-        .no-results {
-            text-align: center;
-            padding: 40px;
-            background: #f8f9fa;
-            border-radius: 12px;
-            margin-top: 20px;
-        }
         @media (max-width: 768px) {
             .search-section {
                 grid-template-columns: 1fr;
@@ -195,14 +182,6 @@
                     <option value="teaching">משאבי הוראה</option>
                     <option value="experiments">ניסויים ומעבדות</option>
                 </select>
-                
-                <label>כיתה:</label>
-                <select id="grade">
-                    <option value="all">כל הכיתות</option>
-                    <option value="elementary">יסודי</option>
-                    <option value="middle">חטיבת ביניים</option>
-                    <option value="high">תיכון</option>
-                </select>
             </div>
         </div>
 
@@ -212,9 +191,7 @@
                 <button onclick="toggleType(this, 'מצגת')" class="type-button selected">מצגת</button>
                 <button onclick="toggleType(this, 'מערך שיעור')" class="type-button selected">מערך שיעור</button>
                 <button onclick="toggleType(this, 'דף עבודה')" class="type-button">דף עבודה</button>
-                <button onclick="toggleType(this, 'הוראה')" class="type-button">הוראה</button>
-                <button onclick="toggleType(this, 'ניסוי')" class="type-button">ניסוי</button>
-                <button onclick="toggleType(this, 'מאמר')" class="type-button">מאמר</button>
+                <button onclick="toggleType(this, 'יחידת לימוד')" class="type-button">יחידת לימוד</button>
             </div>
         </div>
 
@@ -231,12 +208,6 @@
         let selectedTypes = ['מצגת', 'מערך שיעור'];
         const baseUrl = 'https://agriteach.org.il';
 
-        const categoryPaths = {
-            'core': '/ליבת-מדעי-החקלאות',
-            'teaching': '/משאבי-הוראה',
-            'experiments': '/ניסויים-ומעבדות'
-        };
-
         function toggleType(button, type) {
             button.classList.toggle('selected');
             if (selectedTypes.includes(type)) {
@@ -244,6 +215,13 @@
             } else {
                 selectedTypes.push(type);
             }
+        }
+
+        function formatHebrewUrl(text) {
+            return text
+                .replace(/\s+/g, '-')
+                .replace(/['",.]/g, '')
+                .trim();
         }
 
         async function searchActivities() {
@@ -262,21 +240,21 @@
             results.innerHTML = '';
 
             try {
-                // בניית תוצאות חיפוש עם קישורים נכונים
+                const formattedTopic = formatHebrewUrl(topic);
                 const mockResults = [
                     {
-                        title: `${topic} - חומרי למידה`,
-                        type: 'מערך שיעור',
+                        title: `${topic} - יחידת לימוד`,
+                        type: 'יחידת לימוד',
                         category: 'ליבת מדעי החקלאות',
-                        description: 'מאגר פעילויות ומערכי שיעור בנושא',
-                        path: `/ליבת-מדעי-החקלאות/${topic.replace(/\s+/g, '-')}-מאגר-פעילויות`
+                        description: 'יחידת לימוד מלאה כולל מערכי שיעור ומצגות',
+                        path: `/משאבי-הוראה/ליבת-מדעי-החקלאות/יחידת-לימוד-${formattedTopic}`
                     },
                     {
-                        title: `${topic} - משאבי הוראה`,
+                        title: `${topic} - מצגת`,
                         type: 'מצגת',
                         category: 'משאבי הוראה',
-                        description: 'חומרי עזר להוראת הנושא',
-                        path: `/משאבי-הוראה/${topic.replace(/\s+/g, '-')}`
+                        description: 'מצגת להוראת הנושא',
+                        path: `/משאבי-הוראה/ליבת-מדעי-החקלאות/${formattedTopic}`
                     }
                 ];
 
