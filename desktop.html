@@ -1,4 +1,3 @@
-p version with correct links
 
 <!DOCTYPE html>
 <html dir="rtl">
@@ -171,7 +170,7 @@ p version with correct links
         <div class="search-section">
             <div class="main-search">
                 <label>נושא לחיפוש:</label>
-                <input type="text" id="topic" placeholder="למשל: רבייה בצמחים">
+                <input type="text" id="topic" placeholder="למשל: רבייה בצמחים" />
             </div>
 
             <div class="filters">
@@ -218,10 +217,16 @@ p version with correct links
         }
 
         function formatHebrewUrl(text) {
-            return text
-                .replace(/\s+/g, '-')
-                .replace(/['",.]/g, '')
-                .trim();
+            try {
+                // קידוד התווים בעברית לפני יצירת ה-URL
+                return encodeURIComponent(text)
+                    .replace(/%20/g, '-')  // מחליף רווחים במקפים
+                    .replace(/['",.]/g, '') // מסיר תווים מיוחדים
+                    .trim();
+            } catch (e) {
+                console.error('Error encoding URL:', e);
+                return encodeURIComponent(text);
+            }
         }
 
         async function searchActivities() {
@@ -240,21 +245,22 @@ p version with correct links
             results.innerHTML = '';
 
             try {
-                const formattedTopic = formatHebrewUrl(topic);
+                // יצירת קישור עם קידוד נכון של עברית
+                const encodedTopic = formatHebrewUrl(topic);
                 const mockResults = [
                     {
                         title: `${topic} - יחידת לימוד`,
                         type: 'יחידת לימוד',
                         category: 'ליבת מדעי החקלאות',
                         description: 'יחידת לימוד מלאה כולל מערכי שיעור ומצגות',
-                        path: `/משאבי-הוראה/ליבת-מדעי-החקלאות/יחידת-לימוד-${formattedTopic}`
+                        path: `/%D7%9E%D7%A9%D7%90%D7%91%D7%99-%D7%94%D7%95%D7%A8%D7%90%D7%94/%D7%9C%D7%99%D7%91%D7%AA-%D7%9E%D7%93%D7%A2%D7%99-%D7%94%D7%97%D7%A7%D7%9C%D7%90%D7%95%D7%AA/%D7%99%D7%97%D7%99%D7%93%D7%AA-%D7%9C%D7%99%D7%9E%D7%95%D7%93-${encodedTopic}`
                     },
                     {
                         title: `${topic} - מצגת`,
                         type: 'מצגת',
                         category: 'משאבי הוראה',
                         description: 'מצגת להוראת הנושא',
-                        path: `/משאבי-הוראה/ליבת-מדעי-החקלאות/${formattedTopic}`
+                        path: `/%D7%9E%D7%A9%D7%90%D7%91%D7%99-%D7%94%D7%95%D7%A8%D7%90%D7%94/%D7%9C%D7%99%D7%91%D7%AA-%D7%9E%D7%93%D7%A2%D7%99-%D7%94%D7%97%D7%A7%D7%9C%D7%90%D7%95%D7%AA/${encodedTopic}`
                     }
                 ];
 
